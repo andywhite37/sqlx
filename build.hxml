@@ -1,0 +1,9 @@
+-cp src
+-cp test
+-lib thx.core
+-lib thx.promise
+-lib utest
+sqlx.Syntax
+-main sqlx.TestAll
+-js bin/runner.js
+-cmd node bin/runner.js
