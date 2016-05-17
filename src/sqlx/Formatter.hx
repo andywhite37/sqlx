@@ -59,7 +59,7 @@ class Formatter {
 
   public function formatSelection(selection : Selection) : String {
     return switch selection {
-      case All : '*';
+      case SStar : '*';
       case SExpression(expr, alias) : '${formatExpression(expr)}${formatAlias(alias)}';
     };
   }
@@ -102,7 +102,7 @@ class Formatter {
     return switch expression {
       case Lit(v) : formatValue(v);
       case Ident(name) : formatIdent(name);
-      case IdentPath(parts) : parts.map(formatIdent).join(".");
+      case Idents(parent, child) : '${formatIdent(parent)}.${formatIdent(child)}';
       case And(left, right) : '(${formatExpression(left)} and ${formatExpression(right)})';
       case Or(left, right) : '(${formatExpression(left)} or ${formatExpression(right)})';
       case Not(expr) : 'not ${formatExpression(expr)}';

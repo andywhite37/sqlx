@@ -26,17 +26,17 @@ class TestFormatter {
   public function testFormat2() {
     var query : Query = Select({
       selections: [
-        SExpression(Ident("*"), None),
-        SExpression(IdentPath(["users", "name"]), Some("n"))
+        SStar,
+        SExpression(Idents("users", "name"), Some("n"))
       ],
       source: Table("users", Some("u")),
       joins: Some([
-        InnerJoin(Table("orders", Some("o")), BinOp("=", IdentPath(["o", "userId"]), IdentPath(["u", "id"]))),
-        LeftJoin(Table("orderLines", None), BinOp("=", IdentPath(["orderLines", "orderId"]), IdentPath(["o", "id"])))
+        InnerJoin(Table("orders", Some("o")), BinOp("=", Idents("o", "userId"), Idents("u", "id"))),
+        LeftJoin(Table("orderLines", None), BinOp("=", Idents("orderLines", "orderId"), Idents("o", "id")))
       ]),
-      filter: Some(FExpression(And( 
-        BinOp("=", IdentPath(["o", "status"]), Lit(VString("open"))),
-        BinOp("=", IdentPath(["u", "status"]), Lit(VString("active")))
+      filter: Some(FExpression(And(
+        BinOp("=", Idents("o", "status"), Lit(VString("open"))),
+        BinOp("=", Idents("u", "status"), Lit(VString("active")))
       ))),
       groupings: None,
       orderings: None,
@@ -44,6 +44,7 @@ class TestFormatter {
       limit: Some(20)
     });
     var actual = new Formatter('\n').format(query);
+    // TODO: expected is not correct
     var expected = "select * from users;";
     Assert.equals(expected, actual);
   }

@@ -13,7 +13,7 @@ enum Value {
 enum Expression {
   Lit(v : Value);
   Ident(name : String);
-  IdentPath(parts : Array<String>);
+  Idents(parent : String, child : String);
   And(left : Expression, right : Expression);
   Or(left : Expression, right : Expression);
   Not(expr : Expression);
@@ -23,7 +23,7 @@ enum Expression {
 }
 
 enum Selection {
-  All;
+  SStar;
   SExpression(expression : Expression, alias : Option<String>);
 }
 
