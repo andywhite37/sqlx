@@ -13,6 +13,7 @@ enum Value {
 enum Expression {
   Lit(v : Value);
   Ident(name : String);
+  IdentPath(parts : Array<String>);
   And(left : Expression, right : Expression);
   Or(left : Expression, right : Expression);
   Not(expr : Expression);
@@ -22,30 +23,28 @@ enum Expression {
 }
 
 enum Selection {
-  Expression(expression : Expression);
-  ExpressionAlias(expression : Expression, alias : String);
+  All;
+  SExpression(expression : Expression, alias : Option<String>);
 }
 
 enum Source {
-  Table(name : String);
-  TableAlias(name : String, alias : String);
-  Func(name : String, arguments : Array<Expression>);
-  FuncAlias(name : String, arguments : Array<Expression>, alias : String);
-  Select(options : SelectOptions);
+  Table(name : String, alias : Option<String>);
+  Func(name : String, arguments : Array<Expression>, alias : Option<String>);
+  Select(options : SelectOptions, alias : Option<String>);
 }
 
 enum Join {
-  InnerJoin(left : Source, right : Source, on : Expression);
-  LeftJoin(left : Source, right : Source, on : Expression);
-  RightJoin(left : Source, right : Source, on : Expression);
-  FullJoin(left : Source, right : Source, on : Expression);
-  CrossJoin(left : Source, right : Source);
-  Union(left : Source, right : Source);
-  UnionAll(left : Source, right : Source);
+  InnerJoin(source : Source, on : Expression);
+  LeftJoin(source : Source, on : Expression);
+  RightJoin(source : Source, on : Expression);
+  FullJoin(source : Source, on : Expression);
+  CrossJoin(source : Source);
+  Union(source : Source);
+  UnionAll(source : Source);
 }
 
 enum Filter {
-  Expression(expression : Expression);
+  FExpression(expression : Expression);
 }
 
 enum Grouping {
