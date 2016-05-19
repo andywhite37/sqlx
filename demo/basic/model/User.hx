@@ -1,17 +1,17 @@
-package basic.models;
+package basic.model;
 
 @:table("users")
 class User {
   @:col("id")
   @:type("int")
   @:pk
-  public var id : Int;
+  public static var id : Int;
 
   @:col("email")
   @:type("varchar(255)")
-  public var email : String;
+  public static var email : String;
 
   @:col("name")
   @:type("varchar(255)")
-  public var name : String;
+  public static var name : String;
 }
