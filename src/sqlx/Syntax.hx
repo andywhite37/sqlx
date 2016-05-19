@@ -1,6 +1,7 @@
 package sqlx;
 
 import haxe.ds.Option;
+import thx.Tuple;
 
 enum Value {
   VInt(v : Int);
@@ -12,8 +13,9 @@ enum Value {
 
 enum Expression {
   Lit(v : Value);
+  Star;
   Ident(name : String);
-  Idents(parent : String, child : String);
+  IdentMember(parent : String, child : String);
   And(left : Expression, right : Expression);
   Or(left : Expression, right : Expression);
   Not(expr : Expression);
@@ -24,7 +26,7 @@ enum Expression {
 
 enum Selection {
   SStar;
-  SExpression(expression : Expression, alias : Option<String>);
+  SExpr(expression : Expression, alias : Option<String>);
 }
 
 enum Source {
@@ -44,16 +46,24 @@ enum Join {
 }
 
 enum Filter {
-  FExpression(expression : Expression);
+  FExpr(expression : Expression);
 }
 
 enum Grouping {
+  GExpr(expressions : Array<Expression>, having : Option<Expression>);
+}
+
+enum Direction {
+  Asc;
+  Desc;
 }
 
 enum Ordering {
+  OExpr(expressions : Array<Tuple<Expression, Direction>>);
 }
 
 typedef SelectOptions = {
+  distinct: Bool,
   selections : Array<Selection>,
   source : Source,
   joins : Option<Array<Join>>,

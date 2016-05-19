@@ -22,7 +22,8 @@ class Formatter {
   }
 
   public function formatSelect(options : SelectOptions) : String {
-    var selections = 'select ${options.selections.map(formatSelection).join(", ")}';
+    var distinct = options.distinct ? "distinct " : "";
+    var selections = 'select ${distinct}${options.selections.map(formatSelection).join(", ")}';
     var source = '${divider}from ${formatSource(options.source)}';
     var joins = options.joins.cata('', function(joins : Array<Join>) : String {
       return '${divider}${joins.map(formatJoin).join(divider)}';
@@ -60,7 +61,7 @@ class Formatter {
   public function formatSelection(selection : Selection) : String {
     return switch selection {
       case SStar : '*';
-      case SExpression(expr, alias) : '${formatExpression(expr)}${formatAlias(alias)}';
+      case SExpr(expr, alias) : '${formatExpression(expr)}${formatAlias(alias)}';
     };
   }
 
@@ -86,7 +87,7 @@ class Formatter {
 
   public function formatFilter(filter : Filter) : String {
     return switch filter {
-      case FExpression(expr) : ${formatExpression(expr)};
+      case FExpr(expr) : ${formatExpression(expr)};
     };
   }
 
@@ -101,8 +102,9 @@ class Formatter {
   public function formatExpression(expression : Expression) : String {
     return switch expression {
       case Lit(v) : formatValue(v);
+      case Star : '*';
       case Ident(name) : formatIdent(name);
-      case Idents(parent, child) : '${formatIdent(parent)}.${formatIdent(child)}';
+      case IdentMember(parent, child) : '${formatIdent(parent)}.${formatIdent(child)}';
       case And(left, right) : '(${formatExpression(left)} and ${formatExpression(right)})';
       case Or(left, right) : '(${formatExpression(left)} or ${formatExpression(right)})';
       case Not(expr) : 'not ${formatExpression(expr)}';

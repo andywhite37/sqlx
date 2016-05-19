@@ -11,17 +11,32 @@ create table order(
 enum Field<T> {
 }
 
+@:table("user")
+class User {
+  @:column("id")
+  @:type("int")
+  public var id : Int;
+
+  @:column("email")
+  @:type("varchar(20)")
+  public var email : String;
+}
+
 // generated
 @:table("order")
-class ORDER {
-  @:column("id", "varchar")
-  static var ID : Field<T>;
+class Order {
+  @:column("id")
+  @:type("varchar(20)")
+  public var id : String;
 
-  @:column("status", "varchar")
-  static var STATUS : Field<T>;
+  @:column("status")
+  @:type("varchar(10)")
+  public var status : String;
 
-  @:column("user_id", "varchar", "fk")
-  static var USER_ID : Field<T>;
+  @:column("user_id")
+  @:type("int")
+  @:references("user(id)")
+  public var userId : String;
 }
 
 class FN {
