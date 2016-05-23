@@ -10,6 +10,7 @@
 -cp demo
 -main basic.Main
 -js bin/demo/basic/main.js
+-cmd node bin/demo/basic/main.js
 
 --next
 

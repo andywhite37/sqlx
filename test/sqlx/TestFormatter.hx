@@ -3,49 +3,46 @@ package sqlx;
 import haxe.ds.Option;
 import sqlx.Syntax;
 import utest.Assert;
+import thx.Nel;
+using thx.Options;
+using sqlx.util.Nels;
 
 class TestFormatter {
-  public function new() {}
+  var formatter : Formatter;
+
+  public function new() {
+    var settings = Formatter.getDefaultSettings();
+    settings.lineSeparator = " ";
+    this.formatter = new Formatter(settings);
+  }
 
   public function testFormat1() {
-    var query : Query = Select({
-      distinct: false,
-      selections: [SStar],
-      source: Table("users", None),
-      joins: None,
-      filter: None,
-      groupings: None,
-      orderings: None,
-      offset: None,
-      limit: None
-    });
-    var actual = new Formatter().format(query);
+    var query = SelectQuery.empty().setSource(SrcTable("users", None));
+    var actual = formatter.format(Select(query));
     var expected = "select * from users;";
     Assert.equals(expected, actual);
   }
 
   public function testFormat2() {
-    var query : Query = Select({
+    var query = new SelectQuery({
       distinct: true,
-      selections: [
-        SStar,
-        SExpr(IdentMember("u", "name"), Some("n"))
+      selections: Nel.pure(SelExpr(EStar, None)).push(SelExpr(EQualIdent("u", "name"), Some("n"))),
+      source: SrcTable("users", Some("u")),
+      joins: [
+        InnerJoin(SrcTable("orders", Some("o")), EBinOp("=", EQualIdent("o", "userId"), EQualIdent("u", "id"))),
+        LeftJoin(SrcTable("orderLines", None), EBinOp("=", EQualIdent("orderLines", "orderId"), EQualIdent("o", "id")))
       ],
-      source: Table("users", Some("u")),
-      joins: Some([
-        InnerJoin(Table("orders", Some("o")), BinOp("=", IdentMember("o", "userId"), IdentMember("u", "id"))),
-        LeftJoin(Table("orderLines", None), BinOp("=", IdentMember("orderLines", "orderId"), IdentMember("o", "id")))
-      ]),
-      filter: Some(FExpr(And(
-        BinOp("=", IdentMember("o", "status"), Lit(VString("open"))),
-        BinOp("=", IdentMember("u", "status"), Lit(VString("active")))
-      ))),
-      groupings: None,
-      orderings: None,
+      filter: FiltExpr(EAnd(
+        EBinOp("=", EQualIdent("o", "status"), ELit(VString("open"))),
+        EBinOp("=", EQualIdent("u", "status"), ELit(VString("active")))
+      )),
+      groupings: [],
+      orderings: [],
       offset: Some(40),
       limit: Some(20)
     });
-    var actual = new Formatter('\n').format(query);
+    formatter.settings.lineSeparator = "\n";
+    var actual = formatter.format(Select(query));
     var expected = 'select distinct *, u.name as n
 from users as u
 inner join orders as o on (o."userId" = u.id)
