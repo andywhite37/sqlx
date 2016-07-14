@@ -102,39 +102,87 @@ class SelectQuery {
   }
 
   public static function empty() : SelectQuery {
-    return new SelectQuery({ distinct: false, selections: Nel.pure(SelExpr(EStar, Option.None)), source: SrcNone,
-      joins: [], filter: FiltNone, groupings: [], orderings: [],
-      offset: Option.None, limit: Option.None });
+    return new SelectQuery({
+      distinct: false,
+      selections: Nel.pure(SelExpr(EStar, Option.None)),
+      source: SrcNone,
+      joins: [],
+      filter: FiltNone,
+      groupings: [],
+      orderings: [],
+      offset: Option.None,
+      limit: Option.None
+    });
   }
 
   public function setDistinct(distinct : Bool) : SelectQuery {
-    return new SelectQuery({ distinct: distinct, selections: this.selections, source: this.source,
-      joins: this.joins, filter: this.filter, groupings: this.groupings, orderings: this.orderings,
-      offset: this.offset, limit: this.limit });
+    return new SelectQuery({
+      distinct: distinct,
+      selections: this.selections,
+      source: this.source,
+      joins: this.joins,
+      filter: this.filter,
+      groupings: this.groupings,
+      orderings: this.orderings,
+      offset: this.offset,
+      limit: this.limit
+    });
   }
 
   public function setSelections(selections : Nel<Selection>) : SelectQuery {
-    return new SelectQuery({ distinct: this.distinct, selections: selections, source: this.source,
-      joins: this.joins, filter: this.filter, groupings: this.groupings, orderings: this.orderings,
-      offset: this.offset, limit: this.limit });
+    return new SelectQuery({
+      distinct: this.distinct,
+      selections: selections,
+      source: this.source,
+      joins: this.joins,
+      filter: this.filter,
+      groupings: this.groupings,
+      orderings: this.orderings,
+      offset: this.offset,
+      limit: this.limit
+    });
   }
 
   public function setSource(source : Source) : SelectQuery {
-    return new SelectQuery({ distinct: this.distinct, selections: this.selections, source: source,
-      joins: this.joins, filter: this.filter, groupings: this.groupings, orderings: this.orderings,
-      offset: this.offset, limit: this.limit });
+    return new SelectQuery({
+      distinct: this.distinct,
+      selections: this.selections,
+      source: source,
+      joins: this.joins,
+      filter: this.filter,
+      groupings: this.groupings,
+      orderings: this.orderings,
+      offset: this.offset,
+      limit: this.limit
+    });
   }
 
   public function setFilter(filter : Filter) : SelectQuery {
-    return new SelectQuery({ distinct: this.distinct, selections: this.selections, source: this.source,
-      joins: this.joins, filter: filter, groupings: this.groupings, orderings: this.orderings,
-      offset: this.offset, limit: this.limit });
+    return new SelectQuery({
+      distinct: this.distinct,
+      selections: this.selections,
+      source: this.source,
+      joins: this.joins,
+      filter: filter,
+      groupings: this.groupings,
+      orderings: this.orderings,
+      offset: this.offset,
+      limit: this.limit
+    });
   }
 
   public function addJoin(join : Join) : SelectQuery {
-    return new SelectQuery({ distinct: this.distinct, selections: this.selections, source: this.source,
-      joins: this.joins.append(join), filter: filter, groupings: this.groupings, orderings: this.orderings,
-      offset: this.offset, limit: this.limit });
+    return new SelectQuery({
+      distinct: this.distinct,
+      selections: this.selections,
+      source: this.source,
+      joins: this.joins.append(join),
+      filter: filter,
+      groupings: this.groupings,
+      orderings: this.orderings,
+      offset: this.offset,
+      limit: this.limit
+    });
   }
 }
 

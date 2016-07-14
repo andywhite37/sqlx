@@ -11,8 +11,15 @@ using thx.Options;
 using thx.macro.MacroTypes;
 using thx.macro.MacroClassTypes;
 
-typedef ColumnInfo = { haxeFieldName : String, sqlColumnName : String, haxeType : Type, sqlType : String };
+typedef ColumnInfo = {
+  haxeFieldName : String,
+  sqlColumnName : String,
+  haxeType : Type,
+  sqlType : String
+};
+
 typedef ColumnMap = Map<String, ColumnInfo>;
+
 typedef ModelInfo = {
   className : String,
   type: Type,
@@ -58,7 +65,7 @@ class Query {
   static function getModelInfo(e : Expr) : ModelInfo {
     return switch e.expr {
       case EConst(CIdent(name)) : getModelInfoByClassName(name);
-      case _ : Context.error("expecting a const ident expression of a model class", Context.currentPos());
+      case _ : Context.error("sqlx.Query.getModelInfo: expecting a const ident expression of a model class name", Context.currentPos());
     };
   }
 
@@ -67,10 +74,9 @@ class Query {
     var complexType : ComplexType = MacroTypes.qualifyType(type);
     var classType = switch type {
       case TInst(classType, params) : classType.get();
-      case _ : Context.error("failed to get class type for model expr", Context.currentPos());
+      case _ : Context.error('sqlx.Query.getModelInfoByClassName: failed to get class type for model class $className', Context.currentPos());
     };
     var metadata = classType.meta.get();
-
     var tableName = getMetaString(metadata, ":table");
 
     var columns = classType.statics.get().reduce(function(acc : ColumnMap, field : haxe.macro.ClassField) : ColumnMap {
@@ -100,10 +106,10 @@ class Query {
       case EConst(CFloat(value)) : ELit(VFloat(Std.parseFloat(value)));
       case EConst(CString(value)) : ELit(VString(value));
       case EConst(CIdent(name)) : EIdent(name);
-      case EConst(CRegexp(str, opt)) : Context.error('unable to convert const regexp expression "$str" ($opt) to sqlx expression', Context.currentPos());
+      case EConst(CRegexp(str, opt)) : Context.error('sqlx.Query.haxeExprToSqlxExpr: unable to convert const regexp expression "$str" ($opt) to sqlx expression', Context.currentPos());
       case EBinop(op, left, right) : EBinOp(haxeBinopToString(op), haxeExprToSqlxExpr(left), haxeExprToSqlxExpr(right));
       //case EField(expr, field) : 
-      case _ : Context.error('expression ${expr.expr} is not yet supported', Context.currentPos());
+      case _ : Context.error('sqlx.Query.haxeExprToSqlxExpr: expression ${expr.expr} is not yet supported', Context.currentPos());
     };
   }
 
@@ -124,14 +130,14 @@ class Query {
           rightTableName: rightModelInfo.tableName,
           rightColumnName: rightColumnInfo.sqlColumnName,
         }
-      case _ : Context.error("expected a binary operator expression", Context.currentPos());
+      case _ : Context.error("sqlx.Query.getBinaryOperatorInfo: expected a binary operator expression", Context.currentPos());
     };
   }
 
   static function haxeBinopToString(binop : Binop) {
     return switch binop {
       case OpEq : "=";
-      case _ : Context.error('$binop not yet supported', Context.currentPos());
+      case _ : Context.error('sqlx.Query.haxeBinopToString: $binop not yet supported', Context.currentPos());
     };
   }
 
@@ -141,12 +147,12 @@ class Query {
     });
 
     if (meta == null) {
-      Context.error('no meta found for name $name', Context.currentPos());
+      Context.error('sqlx.Query.getMetaString: no meta found for name $name', Context.currentPos());
     }
 
     return switch meta.params {
       case [{ expr: EConst(CString(value)) }] : value;
-      case _ : Context.error('expected a constant string metadata value for name $name', Context.currentPos());
+      case _ : Context.error('sqlx.Query.getMetaString a constant string metadata value for name $name', Context.currentPos());
     }
   }
 #end
